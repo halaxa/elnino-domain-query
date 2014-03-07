@@ -1,0 +1,86 @@
+person:
+  -
+    id: 1
+    salary: 20000
+    blocked: 0
+  -
+    id: 2
+    salary: 25000
+    blocked: 0
+  -
+    id: 3
+    salary: 30000
+    blocked: 1
+
+todo:
+  -
+    id: 1
+    person_id: 1
+    name: Todo 1
+    done: 1
+  -
+    id: 2
+    person_id: 2
+    name: Todo 2
+    done: 0
+  -
+    id: 3
+    person_id: 2
+    name: Todo 3
+    done: 1
+  -
+    id: 4
+    person_id: 3
+    name: Todo 4
+    done: 0
+  -
+    id: 5
+    person_id: 3
+    name: Todo 5
+    done: 0
+  -
+    id: 6
+    person_id: 3
+    name: Todo 6
+    done: 1
+
+rating:
+  -
+    id: 1
+    stars: 1
+    comment: Dummy comment
+  -
+    id: 2
+    stars: 4
+    comment: Dummy comment
+  -
+    id: 3
+    stars: 3
+    comment: Dummy comment
+  -
+    id: 4
+    stars: 4
+    comment: Dummy comment
+  -
+    id: 5
+    stars: 5
+    comment: Dummy comment
+
+person_rating:
+  -
+    person_id: 1
+    rating_id: 1
+  -
+    person_id: 1
+    rating_id: 2
+
+todo_rating:
+  -
+    todo_id: 2
+    rating_id: 3
+  -
+    todo_id: 2
+    rating_id: 4
+  -
+    todo_id: 2
+    rating_id: 5

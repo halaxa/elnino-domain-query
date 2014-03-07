@@ -1,0 +1,23 @@
+{
+    "name": "elnino/domain-queries",
+    "description": "Composable and reusable queries with domain logic over Doctrine 2",
+    "require": {
+        "doctrine/orm": "2.*"
+    },
+    "require-dev": {
+        "phpunit/dbunit": "1.2.*"
+    },
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Filip Halaxa",
+            "email": "filip.halaxa@elnino.cz"
+        }
+    ],
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-0": {
+            "Elnino\\": "src/"
+        }
+    }
+}
