@@ -1,5 +1,5 @@
 {
-    "name": "elnino/domain-queries",
+    "name": "elnino/domain-query",
     "description": "Composable and reusable queries with domain logic over Doctrine 2",
     "require": {
         "doctrine/orm": "2.*"
