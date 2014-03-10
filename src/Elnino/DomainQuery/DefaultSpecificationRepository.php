@@ -71,7 +71,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         foreach ($specs as $spec) {
             $validClass = false;
             $expr = $spec;
-            
+
             if ($expr instanceof SpecInterface) {
                 $expr = self::getExprFromSpec($expr, $mainAlias);
                 $validClass = true;
@@ -85,7 +85,10 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
                 foreach ($expr->getBinds() as $param => $value) {
                     $qb->setParameter($param, $value);
                 }
-                $qb->andWhere($expr->getExpression());
+                $where = $expr->getExpression();
+                if ($where) {
+                    $qb->andWhere($where);
+                }
             }
 
             if ($spec instanceof QueryBuilderModifierInterface) {
@@ -288,4 +291,4 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
     }
 
 
-} 
+}

@@ -49,4 +49,10 @@ class JoinTest extends \PHPUnit_Framework_TestCase
         );
         $this->assertInstanceOf(SpecExpr::class, $join->expression(null));
     }
+
+    public function testJoinNeedsNoSecondParam()
+    {
+        $join = new Join('field');
+        $this->assertInstanceOf(SpecExpr::class, $join->expression(null));
+    }
 }

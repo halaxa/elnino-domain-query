@@ -83,9 +83,9 @@ class ActiveUser implements SpecInterface
 }
 ```
 
-Objekt `SpecExpr` má dva povinné parametry. Jedním je doctrinní výraz a druhým je mapa 
+Objekt `SpecExpr` zde voláme se dvěma parametry. Prvním je doctrinní výraz a druhým je mapa
 `:parametr => 'hodnota'`. Parametry bychom používat měli a to jak kvůli escapování tak kvůli
-cachování SQL dotazů, které Doctrine provádí. Proto je parametr s mapou povinný. Specifikaci pak
+cachování SQL dotazů, které Doctrine provádí. Specifikaci pak
 použijeme v metodě `match()`, která má jako parametry DQL SELECT clause a specifikace. Protože jsme
 uvnitř naší specifikace použili natvrdo alias `'user'` musíme tuto specifikaci použít v metodě `match()`
 se stejným aliasem:
@@ -156,7 +156,7 @@ $articleRepo->match('article'
 ```
 
 Prvním parametrem je join řetětec nebo `JoinExpr`. To kdybychom chtěli join specifikovat podrobněji. Druhým
-parametrem je `SpecInterface`, který chceme přijoinovat. Tím se nám otevírá cesta ke stromovému joinování
+parametrem (nepovinným) je `SpecInterface`, který chceme přijoinovat. Tím se nám otevírá cesta ke stromovému joinování
 přes více entit, neboť `Join` samozřejmě implementuje `SpecInterface`:
 
 ```php

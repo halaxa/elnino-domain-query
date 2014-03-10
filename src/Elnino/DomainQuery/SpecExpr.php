@@ -27,7 +27,7 @@ class SpecExpr
      * @param array                      $binds
      * @param JoinExpr|JoinExpr[]        $joins JoinExpr or array of them
      */
-    public function __construct($expression, $binds, $joins = null)
+    public function __construct($expression = null, $binds = [], $joins = [])
     {
         $this->expression = $expression;
         $this->binds = (array) $binds;
@@ -57,4 +57,4 @@ class SpecExpr
     {
         return $this->joins;
     }
-} 
+}

@@ -34,8 +34,9 @@ class Join implements SpecInterface
      * @param SpecExpr|SpecInterface $expr
      * @throws \InvalidArgumentException
      */
-    public function __construct($join, $expr)
+    public function __construct($join, $expr = null)
     {
+        $expr = $expr ?: new SpecExpr();
         $join = $join instanceof JoinExpr ? $join : JoinExpr::fromString(static::JOIN_TYPE, $join);
         if ( ! ($expr instanceof SpecInterface || $expr instanceof SpecExpr)) {
             throw new \InvalidArgumentException(sprintf(
@@ -98,4 +99,4 @@ class Join implements SpecInterface
     {
         self::$counter = 0;
     }
-} 
+}

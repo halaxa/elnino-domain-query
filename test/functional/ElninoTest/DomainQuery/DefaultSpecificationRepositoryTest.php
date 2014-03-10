@@ -427,4 +427,10 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         ]));
         $this->assertCount(1, $result);
     }
+
+    public function testJoinNeedsNoSpec()
+    {
+        $result = $this->repo->match(new Join('todos'));
+        $this->assertCount(3, $result);
+    }
 }
