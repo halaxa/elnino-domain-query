@@ -32,7 +32,7 @@ class JoinTest extends \PHPUnit_Framework_TestCase
         ]);
     }
 
-    public function testJoinCreatesAliasIfNoAliasInJoinExprAndParameterIsNotAliasAware()
+    public function testJoinCreatesAliasIfNoAliasInJoinExpr()
     {
         $join = new Join(
             new JoinExpr(JoinExpr::INNER_JOIN, 'test.text'),
