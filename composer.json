@@ -1,11 +1,18 @@
 {
     "name": "elnino/domain-query",
     "description": "Composable and reusable queries with domain logic over Doctrine 2",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://composer.int.elnino.cz"
+        }
+    ],
     "require": {
         "doctrine/orm": "2.*"
     },
     "require-dev": {
-        "phpunit/dbunit": "1.2.*"
+        "phpunit/dbunit": "1.2.*",
+        "elnino/mock": "dev"
     },
     "license": "proprietary",
     "authors": [
