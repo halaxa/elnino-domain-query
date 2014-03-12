@@ -11,11 +11,12 @@ namespace ElninoTest\DomainQuery\Spec;
 use Elnino\DomainQuery\SpecExpr;
 use Elnino\DomainQuery\JoinExpr;
 use Elnino\DomainQuery\Spec\Join;
+use Elnino\MockingTrait;
 use ElninoTest\SimpleMockTrait;
 
 class JoinTest extends \PHPUnit_Framework_TestCase
 {
-    use SimpleMockTrait;
+    use MockingTrait;
 
     private $exprMock;
 

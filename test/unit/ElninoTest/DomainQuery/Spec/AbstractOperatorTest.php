@@ -12,6 +12,7 @@ use Elnino\DomainQuery\Spec\AbstractOperator;
 use Elnino\DomainQuery\JoinExpr;
 use Elnino\DomainQuery\Spec\AndX;
 use Elnino\DomainQuery\SpecExpr;
+use Elnino\MockingTrait;
 use ElninoTest\DomainQuery\Entity\DoneTodoSpec;
 use ElninoTest\DomainQuery\Entity\RichUnblockedSpec;
 use Doctrine\ORM\Query\Expr;
@@ -19,7 +20,7 @@ use ElninoTest\SimpleMockTrait;
 
 class AbstractOperatorTest extends \PHPUnit_Framework_TestCase
 {
-    use SimpleMockTrait;
+    use MockingTrait;
 
     public function setUp()
     {

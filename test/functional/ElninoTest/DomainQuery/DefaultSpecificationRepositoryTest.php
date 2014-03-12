@@ -21,6 +21,7 @@ use Elnino\DomainQuery\Spec\AndX;
 use Elnino\DomainQuery\Spec\Join;
 use Elnino\DomainQuery\Spec\NotX;
 use Elnino\DomainQuery\Spec\OrX;
+use Elnino\MockingTrait;
 use ElninoTest\DomainQuery\Entity\DoneTodoSpec;
 use ElninoTest\DomainQuery\Entity\MasterUnblockedSpec;
 use ElninoTest\DomainQuery\Entity\Person;
@@ -39,11 +40,10 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Query;
 use Doctrine\ORM\Query\Expr;
 use ElninoTest\FunctionalTrait;
-use ElninoTest\SimpleMockTrait;
 
 class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_TestCase
 {
-    use SimpleMockTrait;
+    use MockingTrait;
     use FunctionalTrait;
 
     /** @var  DefaultSpecificationRepository */

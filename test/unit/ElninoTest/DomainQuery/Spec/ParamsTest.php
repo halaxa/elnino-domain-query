@@ -10,11 +10,12 @@ namespace ElninoTest\DomainQuery\Spec;
 
 use Elnino\DomainQuery\SpecExpr;
 use Elnino\DomainQuery\Spec\Params;
+use Elnino\MockingTrait;
 use ElninoTest\SimpleMockTrait;
 
 class ParamsTest extends \PHPUnit_Framework_TestCase
 {
-    use SimpleMockTrait;
+    use MockingTrait;
 
     public function testGeneratesParams()
     {
