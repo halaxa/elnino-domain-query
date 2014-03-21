@@ -18,7 +18,7 @@ interface SpecInterface
      * Expression describing the specification.
      *
      * @param string $alias
-     * @return SpecExpr
+     * @return SpecExpr|SpecInterface
      */
     public function expression($alias = null);
-} 
+}
