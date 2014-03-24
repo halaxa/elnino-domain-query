@@ -21,7 +21,6 @@
             "email": "filip.halaxa@elnino.cz"
         }
     ],
-    "minimum-stability": "dev",
     "autoload": {
         "psr-0": {
             "Elnino\\": "src/"
