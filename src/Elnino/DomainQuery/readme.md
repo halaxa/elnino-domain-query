@@ -288,4 +288,20 @@ jejich klíčové metody jsou v tomto pořadí také volány.
 
 #### ResultFetcherInterface
 Slouží k získání výsledku/dat z Query. Jeho metodě `fetchResult()` je předán Query a její návratová hodnota je brána
-za výsledek dotazu. Odkaz na tento výsledek je pak dodatečně předán případné implementaci `ResultModifierInterface`
+za výsledek dotazu. Odkaz na tento výsledek je pak dodatečně předán případné implementaci `ResultModifierInterface`.
+
+#### Explicitní aliasy
+Explicitně předávané aliasy do `match()` metody lze kombinovat se specifikacemi, které nastaví SCALAR nebo ARRAY mód
+hydratace a dosáhnout tím optimalizovaných read-only dotazů typu:
+
+```php
+class HydrateArray implements ResultFetcherInterface{
+
+    public function fetchResult(Query $query)
+    {
+        return $query->getArrayResult();
+    }
+}
+
+$result = $userRepo->match('user.id, user.name', new ActiveUser, new HydrateArray);
+```
