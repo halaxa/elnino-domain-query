@@ -22,6 +22,7 @@ use Elnino\DomainQuery\Spec\Join;
 use Elnino\DomainQuery\Spec\NotX;
 use Elnino\DomainQuery\Spec\OrX;
 use Elnino\MockingTrait;
+use ElninoTest\DomainQuery\Entity\ArrayResultFetcher;
 use ElninoTest\DomainQuery\Entity\DoneTodoSpec;
 use ElninoTest\DomainQuery\Entity\MasterUnblockedSpec;
 use ElninoTest\DomainQuery\Entity\Person;
@@ -168,6 +169,25 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
     public function testMatchWithAliasOnlyReturnsAllEntities()
     {
         $this->assertCount(3, $this->repo->match('dummy'));
+    }
+
+
+    public  function testMatchWithAliasFields()
+    {
+        $this->assertCount(3, $this->repo->match('dummy.id, dummy.salary'));
+    }
+
+    public  function testMatchWithAliasFieldsAndFether()
+    {
+        $exp = [
+            ['id' => 1, 'salary' => 20000],
+            ['id' => 2, 'salary' => 25000],
+            ['id' => 3, 'salary' => 30000],
+        ];
+
+        $res = $this->repo->match('dummy.id, dummy.salary', new ArrayResultFetcher());
+
+        $this->assertEquals($exp, $res);
     }
 
     public function testMatchWithMoreThanOneAliasesInSelectWithoutJoinFails()

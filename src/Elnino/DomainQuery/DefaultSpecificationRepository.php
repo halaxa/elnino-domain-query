@@ -50,7 +50,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         $qb = $this->em->createQueryBuilder();
 
         if (is_string($select)) {
-            $mainAlias = trim(explode(',', $select)[0]);
+            $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
             $specs = array_slice($args, 1);
         } else {
             $mainAlias = strtolower(array_reverse(explode('\\', $this->entityClass))[0]);
