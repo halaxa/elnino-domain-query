@@ -29,7 +29,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
      * @param string        $entityClass
      * @param EntityManager $em
      */
-    public function __construct($entityClass, EntityManager $em)
+    public function __construct(EntityManager $em, $entityClass)
     {
         $this->entityClass = $entityClass;
         $this->em = $em;

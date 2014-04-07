@@ -70,8 +70,8 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
     {
         parent::setUp();
         $this->repo = new DefaultSpecificationRepository(
-            Entity\Person::class,
-            $this->getEm()
+            $this->getEm(),
+            Entity\Person::class
         );
         $this->e = new Query\Expr();
         $this->logger = new DebugStack();
@@ -95,7 +95,7 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
             'contains' => true
         ]);
 
-        $repo = new DefaultSpecificationRepository(Person::class, $em);
+        $repo = new DefaultSpecificationRepository($em, Person::class);
 
         $repo->find(1);
         $repo->persist(new \stdClass());
@@ -272,7 +272,7 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
 
     public function testJoinSupportsRecursiveSpec()
     {
-        $repo = new DefaultSpecificationRepository(Todo::class, $this->getEm());
+        $repo = new DefaultSpecificationRepository($this->getEm(), Todo::class);
         $result = $repo->match(new Join('person', new WrappedUnblockedSpec));
         $this->assertCount(3, $result);
     }
