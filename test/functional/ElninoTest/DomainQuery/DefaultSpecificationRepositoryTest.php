@@ -453,4 +453,30 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $result = $this->repo->match(new Join('todos'));
         $this->assertCount(3, $result);
     }
+
+    public function testEntityClassIsOptional()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm());
+    }
+
+    public function testClassTakenFromSpecTakesPrecedence()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm(), Todo::class);
+        $spec = new MasterUnblockedSpec;
+
+        $this->assertSame(Person::class, $spec->getEntityClass());
+
+        $result = $repo->match($spec);
+
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(Person::class, $result[0]);
+    }
+
+    public function testThrowsIfNoEntityClassAvailable()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm());
+
+        $this->setExpectedException(InvalidStateException::class, 'No master entity class available.');
+        $repo->match(new UnblockedSpec);
+    }
 }

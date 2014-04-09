@@ -9,12 +9,13 @@
 namespace ElninoTest\DomainQuery\Entity;
 
 
+use Elnino\DomainQuery\EntityClassProviderInterface;
 use Elnino\DomainQuery\SpecExpr;
 use Elnino\DomainQuery\QueryModifierInterface;
 use Elnino\DomainQuery\SpecInterface;
 use Doctrine\ORM\Query;
 
-class MasterUnblockedSpec implements SpecInterface, QueryModifierInterface
+class MasterUnblockedSpec implements SpecInterface, QueryModifierInterface, EntityClassProviderInterface
 {
     /**
      * Modifies parameters of a query object.
@@ -38,4 +39,15 @@ class MasterUnblockedSpec implements SpecInterface, QueryModifierInterface
         return new UnblockedSpec();
     }
 
-} 
+    /**
+     * Provides entity class on which a spec implementing this iface is build
+     *
+     * @return string
+     */
+    public function getEntityClass()
+    {
+        return Person::class;
+    }
+
+
+}

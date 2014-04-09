@@ -29,7 +29,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
      * @param string        $entityClass
      * @param EntityManager $em
      */
-    public function __construct(EntityManager $em, $entityClass)
+    public function __construct(EntityManager $em, $entityClass = null)
     {
         $this->entityClass = $entityClass;
         $this->em = $em;
@@ -58,8 +58,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $specs = $args;
         }
 
-        $qb->select($select)
-           ->from($this->entityClass, $mainAlias);
+        $qb->select($select);
 
         /** @var QueryModifierInterface[] $queryModifiers */
         $queryModifiers  = [];
@@ -67,10 +66,19 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         $resultModifiers = [];
         /** @var ResultFetcherInterface $resultFetcher */
         $resultFetcher = null;
+        /** @var string $from */
+        $from = null;
+        /** @var SpecExpr[] $specExprs */
+        $specExprs = [];
 
         foreach ($specs as $spec) {
             $validClass = false;
             $expr = $spec;
+
+            if ($spec instanceof EntityClassProviderInterface) {
+                $validClass = true;
+                $from = $spec->getEntityClass();
+            }
 
             if ($expr instanceof SpecInterface) {
                 $expr = self::getExprFromSpec($expr, $mainAlias);
@@ -78,17 +86,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             }
 
             if ($expr instanceof SpecExpr) {
-                foreach ($expr->getJoins() as $join) {
-                    $joinFunc = $join->isLeft() ? 'leftJoin' : 'join';
-                    call_user_func_array([$qb, $joinFunc], array_slice($join->getParams(), 1));
-                }
-                foreach ($expr->getBinds() as $param => $value) {
-                    $qb->setParameter($param, $value);
-                }
-                $where = $expr->getExpression();
-                if ($where) {
-                    $qb->andWhere($where);
-                }
+                $specExprs[] = $expr;
             }
 
             if ($spec instanceof QueryBuilderModifierInterface) {
@@ -122,6 +120,30 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
                     ResultFetcherInterface::class,
                     is_object($spec) ? get_class($spec) : gettype($spec)
                 ));
+            }
+        }
+
+        $qbFrom = $qb->getDQLPart('from');
+
+        if (!$from && !$this->entityClass && !$qbFrom) {
+            throw new InvalidStateException('No master entity class available.');
+        }
+
+        if (!$qbFrom) {
+            $qb->from($from ?: $this->entityClass, $mainAlias);
+        }
+
+        foreach ($specExprs as $expr) {
+            foreach ($expr->getJoins() as $join) {
+                $joinFunc = $join->isLeft() ? 'leftJoin' : 'join';
+                call_user_func_array([$qb, $joinFunc], array_slice($join->getParams(), 1));
+            }
+            foreach ($expr->getBinds() as $param => $value) {
+                $qb->setParameter($param, $value);
+            }
+            $where = $expr->getExpression();
+            if ($where) {
+                $qb->andWhere($where);
             }
         }
 
