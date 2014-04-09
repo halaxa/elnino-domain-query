@@ -50,24 +50,24 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         $qb = $this->em->createQueryBuilder();
 
         if (is_string($select)) {
-            $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
             $specs = array_slice($args, 1);
         } else {
-            $mainAlias = strtolower(array_reverse(explode('\\', $this->entityClass))[0]);
-            $select = $mainAlias;
+            $select = null;
             $specs = $args;
         }
 
-        $qb->select($select);
-
+        /** @var SpecInterface[] $specInterfaces */
+        $specInterfaces = [];
+        /** @var QueryBuilderModifierInterface[] $queryBuilderModifiers */
+        $queryBuilderModifiers  = [];
         /** @var QueryModifierInterface[] $queryModifiers */
         $queryModifiers  = [];
         /** @var ResultModifierInterface[] $resultModifiers */
         $resultModifiers = [];
         /** @var ResultFetcherInterface $resultFetcher */
         $resultFetcher = null;
-        /** @var string $from */
-        $from = null;
+        /** @var string $entityClass */
+        $entityClass = null;
         /** @var SpecExpr[] $specExprs */
         $specExprs = [];
 
@@ -76,21 +76,22 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $expr = $spec;
 
             if ($spec instanceof EntityClassProviderInterface) {
+                $entityClass = $spec->getEntityClass();
                 $validClass = true;
-                $from = $spec->getEntityClass();
             }
 
             if ($expr instanceof SpecInterface) {
-                $expr = self::getExprFromSpec($expr, $mainAlias);
+                $specInterfaces[] = $expr;
                 $validClass = true;
             }
 
             if ($expr instanceof SpecExpr) {
                 $specExprs[] = $expr;
+                $validClass = true;
             }
 
             if ($spec instanceof QueryBuilderModifierInterface) {
-                $spec->modifyQueryBuilder($qb);
+                $queryBuilderModifiers[] = $spec;
                 $validClass = true;
             }
 
@@ -123,14 +124,24 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             }
         }
 
-        $qbFrom = $qb->getDQLPart('from');
+        $entityClass = $entityClass ?: $this->entityClass;
 
-        if (!$from && !$this->entityClass && !$qbFrom) {
+        if ( ! $entityClass) {
             throw new InvalidStateException('No master entity class available.');
         }
 
-        if (!$qbFrom) {
-            $qb->from($from ?: $this->entityClass, $mainAlias);
+        if ($select) {
+            $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
+        } else {
+            $mainAlias = strtolower(array_reverse(explode('\\', $entityClass))[0]);
+            $select = $mainAlias;
+        }
+
+        $qb->select($select)
+           ->from($entityClass, $mainAlias);
+
+        foreach ($specInterfaces as $spec) {
+            $specExprs[] = self::getExprFromSpec($spec, $mainAlias);
         }
 
         foreach ($specExprs as $expr) {
@@ -145,6 +156,10 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             if ($where) {
                 $qb->andWhere($where);
             }
+        }
+
+        foreach ($queryBuilderModifiers as $queryBuilderModifier) {
+            $queryBuilderModifier->modifyQueryBuilder($qb);
         }
 
         $query = $qb->getQuery();

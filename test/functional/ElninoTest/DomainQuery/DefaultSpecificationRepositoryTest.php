@@ -479,4 +479,16 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $this->setExpectedException(InvalidStateException::class, 'No master entity class available.');
         $repo->match(new UnblockedSpec);
     }
+
+    public function testWithoutEntityClassWithProvider()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm());
+        $spec = new MasterUnblockedSpec;
+
+        $this->assertSame(Person::class, $spec->getEntityClass());
+
+        $result = $repo->match($spec);
+        $this->assertCount(1, $result);
+        $this->assertInstanceOf(Person::class, $result[0]);
+    }
 }
