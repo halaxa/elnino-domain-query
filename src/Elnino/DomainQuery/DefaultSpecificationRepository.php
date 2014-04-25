@@ -327,5 +327,23 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         return $this->em->contains($object);
     }
 
+    /**
+     * Executes a function in a transaction.
+     *
+     * The function gets passed this EntityManager instance as an (optional) parameter.
+     *
+     * {@link flush} is invoked prior to transaction commit.
+     *
+     * If an exception occurs during execution of the function or flushing or transaction commit,
+     * the transaction is rolled back, the EntityManager closed and the exception re-thrown.
+     *
+     * @param callable $func The function to execute transactionally.
+     *
+     * @return mixed The non-empty value returned from the closure or true instead.
+     */
+    public function transactional($callable)
+    {
+        return $this->em->transactional($callable);
+    }
 
 }

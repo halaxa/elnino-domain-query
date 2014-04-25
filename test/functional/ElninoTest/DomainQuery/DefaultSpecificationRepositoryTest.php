@@ -92,7 +92,8 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
             'detach' => true,
             'refresh' => true,
             'flush' => true,
-            'contains' => true
+            'contains' => true,
+            'transactional' => true
         ]);
 
         $repo = new DefaultSpecificationRepository($em, Person::class);
@@ -106,6 +107,7 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $repo->refresh(new \stdClass());
         $repo->flush();
         $repo->contains(new \stdClass());
+        $repo->transactional(function(){});
     }
 
     /**
