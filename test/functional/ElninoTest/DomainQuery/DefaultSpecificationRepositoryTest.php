@@ -493,4 +493,20 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $this->assertCount(1, $result);
         $this->assertInstanceOf(Person::class, $result[0]);
     }
+
+    public function testCallsDqlLoggerIfPresent()
+    {
+        $loggerMock = function ($dql) {
+            $this->assertSame(
+                'SELECT person FROM ElninoTest\DomainQuery\Entity\Person person WHERE person.blocked = :blocked',
+                $dql
+            );
+        };
+
+        $repo = new DefaultSpecificationRepository($this->getEm());
+        $spec = new MasterUnblockedSpec;
+
+        $repo->setDqlLogger($loggerMock);
+        $result = $repo->match($spec);
+    }
 }

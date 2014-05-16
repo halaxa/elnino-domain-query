@@ -25,6 +25,9 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
     /** @var  EntityManager */
     private $em;
 
+    /** @var callable */
+    private $dqlLogger;
+
     /**
      * @param string        $entityClass
      * @param EntityManager $em
@@ -174,6 +177,10 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $result = $query->getResult();
         }
 
+        if ($this->dqlLogger) {
+            call_user_func($this->dqlLogger, $query->getDQL());
+        }
+
         Join::_queryFinished();
 
         foreach ($resultModifiers as $resultModifier) {
@@ -181,6 +188,27 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         }
 
         return $result;
+    }
+
+    /**
+     * @param callable $dqlLogger
+     */
+    public function setDqlLogger(callable $dqlLogger)
+    {
+        $this->dqlLogger = $dqlLogger;
+    }
+
+    /**
+     * @return callable
+     */
+    public function getDqlLogger()
+    {
+        return $this->dqlLogger;
+    }
+
+    public function clearDqlLogger()
+    {
+        $this->dqlLogger = null;
     }
 
     /**
