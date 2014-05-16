@@ -49,12 +49,15 @@ Základním stavebním kamenem tohoto systému jsou:
 Repository v názvu je jen zpola nesprávným označením toho, že tento objekt je naším výchozím bodem
 pro komunikaci s databází. **Nedědí od `EntityRepository`**. Naopak zavádí koncept služby,
 která kromě vyzobávání objektů z úložiště umožňuje i jejich ukládání a mazání (obsahuje třeba `persist()`,
-`flush()`, `remove()` apod.). Stejně jako `EntityRepository` má ovšem nastavenou výchozí entitu,
-nad kterou pracuje:
+`flush()`, `remove()` apod.). Podobně jako `EntityRepository` má nastavenou výchozí entitu,
+nad kterou pracuje. Poskytnout ji ovšem nemusíme:
 
 ```php
-$userRepo = new DefaultSpecificationRepository(User::class, $entityManager);
+$userRepo = new DefaultSpecificationRepository($entityManager, User::class);
+$userRepo2 = new DefaultSpecificationRepository($entityManager);
 ```
+
+O tom, co se stane, když ji neposkytneme, se dozvíme [dále](#entityclassproviderinterface).
 
 Není tedy třeba sahat si pro `EntityManager` kvůli persistenci entit a pro repository kvůli
 jejich získávání (varianta tahání repository z `EntityManager` ani není hodná zmínění).
@@ -283,12 +286,17 @@ Metoda `match()` na našich specifikacích rozpoznává následující rozhrann�
 3. `QueryModifierInterface` Bude mu předán Query k modifikaci
 4. `ResultFetcherInterface` Zajistí získání dat z Query
 5. `ResultModifierInterface` Dostane výsledek dotazu (např. kolekci entit) opět k dodatečné modifikaci.
+6. `EntityClassProviderInterface` Poskytuje FQCN entity, ke které se implementující specifikace váže.
 
 jejich klíčové metody jsou v tomto pořadí také volány.
 
 #### ResultFetcherInterface
 Slouží k získání výsledku/dat z Query. Jeho metodě `fetchResult()` je předán Query a její návratová hodnota je brána
 za výsledek dotazu. Odkaz na tento výsledek je pak dodatečně předán případné implementaci `ResultModifierInterface`.
+
+#### EntityClassProviderInterface
+Pokud je implementováno, je třídě dána prioritra před tou, která je v Repository jako primární. Pokud Repository entity
+třídu nemá, je implementování tohoto interface nutné.
 
 #### Explicitní aliasy
 Explicitně předávané aliasy do `match()` metody lze kombinovat se specifikacemi, které nastaví SCALAR nebo ARRAY mód
