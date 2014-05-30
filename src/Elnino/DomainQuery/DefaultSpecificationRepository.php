@@ -144,7 +144,10 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
            ->from($entityClass, $mainAlias);
 
         foreach ($specInterfaces as $spec) {
-            $specExprs[] = self::getExprFromSpec($spec, $mainAlias);
+            $specExpr = self::getExprFromSpec($spec, $mainAlias);
+            if ($specExpr instanceof SpecExpr) { // allow not to return SpecExpr
+                $specExprs[] = $specExpr;
+            }
         }
 
         foreach ($specExprs as $expr) {
@@ -171,14 +174,14 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $queryModifier->modifyQuery($query);
         }
 
+        if ($this->dqlLogger) {
+            call_user_func($this->dqlLogger, $query->getDQL());
+        }
+
         if ($resultFetcher) {
             $result = $resultFetcher->fetchResult($query);
         } else {
             $result = $query->getResult();
-        }
-
-        if ($this->dqlLogger) {
-            call_user_func($this->dqlLogger, $query->getDQL());
         }
 
         Join::_queryFinished();
