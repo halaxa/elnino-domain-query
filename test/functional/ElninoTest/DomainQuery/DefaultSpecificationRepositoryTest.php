@@ -15,6 +15,7 @@ use Elnino\DomainQuery\QueryBuilderModifierInterface;
 use Elnino\DomainQuery\QueryModifierInterface;
 use Elnino\DomainQuery\ResultFetcherInterface;
 use Elnino\DomainQuery\ResultModifierInterface;
+use Elnino\DomainQuery\Spec\OneOrNull;
 use Elnino\DomainQuery\Spec\Params;
 use Elnino\DomainQuery\Spec\LeftJoin;
 use Elnino\DomainQuery\Spec\AndX;
@@ -508,5 +509,14 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
 
         $repo->setDqlLogger($loggerMock);
         $result = $repo->match($spec);
+    }
+
+    public function testOneOrNullSpec()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm(), Person::class);
+        $result = $repo->match(new UnblockedSpec(), new Params(['id' => 1]), new OneOrNull);
+
+        $this->assertInstanceOf(Person::class, $result);
+        $this->assertSame(1, $result->getId());
     }
 }

@@ -6,7 +6,7 @@
  * Time: 15:51
  */
 
-namespace Commons\Spec;
+namespace Elnino\DomainQuery\Spec;
 
 
 use Doctrine\ORM\Query;
@@ -22,6 +22,6 @@ class OneOrNull implements ResultFetcherInterface
      */
     public function fetchResult(Query $query)
     {
-        $query->getOneOrNullResult();
+        return $query->getOneOrNullResult();
     }
 }
