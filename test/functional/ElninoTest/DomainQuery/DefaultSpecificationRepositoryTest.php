@@ -519,4 +519,15 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $this->assertInstanceOf(Person::class, $result);
         $this->assertSame(1, $result->getId());
     }
+
+    public function testClassPassedToFindOverridesInternalEntityClass()
+    {
+        $em = $this->getMockSimply(EntityManager::class, [
+            'find' => function ($entityClass, $id) {
+                    $this->assertSame($entityClass, 'passedClass');
+                }
+        ]);
+        $repo = new DefaultSpecificationRepository($em, 'internalClass');
+        $repo->find(1, 'passedClass');
+    }
 }

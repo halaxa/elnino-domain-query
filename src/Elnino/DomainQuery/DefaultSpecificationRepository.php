@@ -239,12 +239,14 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
     /**
      * Returns one entity by id or null when not found in persistence layer.
      *
-     * @param mixed $id
+     * @param mixed       $id
+     * @param string|null $entityClass Optional entity class overriding internal entity class
      * @return null|object
      */
-    public function find($id)
+    public function find($id, $entityClass = null)
     {
-        return $this->em->find($this->entityClass, $id);
+        $entityClass = $entityClass ?: $this->entityClass;
+        return $this->em->find($entityClass, $id);
     }
 
     /**
