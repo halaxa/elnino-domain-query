@@ -137,7 +137,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
         } else {
             $mainAlias = strtolower(array_reverse(explode('\\', $entityClass))[0]);
-            $select = $mainAlias;
+            $select = $mainAlias = $mainAlias . '0'; // eliminates reserved words collision
         }
 
         $qb->select($select)

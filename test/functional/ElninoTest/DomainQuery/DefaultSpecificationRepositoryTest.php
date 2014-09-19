@@ -26,6 +26,7 @@ use Elnino\MockingTrait;
 use ElninoTest\DomainQuery\Entity\ArrayResultFetcher;
 use ElninoTest\DomainQuery\Entity\DoneTodoSpec;
 use ElninoTest\DomainQuery\Entity\MasterUnblockedSpec;
+use ElninoTest\DomainQuery\Entity\Order;
 use ElninoTest\DomainQuery\Entity\Person;
 use ElninoTest\DomainQuery\Entity\RecursiveSpec;
 use ElninoTest\DomainQuery\Entity\RichSpec;
@@ -499,7 +500,7 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
     {
         $loggerMock = function ($dql) {
             $this->assertSame(
-                'SELECT person FROM ElninoTest\DomainQuery\Entity\Person person WHERE person.blocked = :blocked',
+                'SELECT person0 FROM ElninoTest\DomainQuery\Entity\Person person0 WHERE person0.blocked = :blocked',
                 $dql
             );
         };
@@ -529,5 +530,12 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         ]);
         $repo = new DefaultSpecificationRepository($em, 'internalClass');
         $repo->find(1, 'passedClass');
+    }
+
+    public function testGeneratedAliasIsNotAReservedWord()
+    {
+        // generated alias should be '_order' instead of 'order'
+        $repo = new DefaultSpecificationRepository($this->getEm(), Order::class);
+        $repo->match();
     }
 }
