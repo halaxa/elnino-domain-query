@@ -13,19 +13,24 @@ use Elnino\DomainQuery\QueryModifierInterface;
 use Doctrine\ORM\Query;
 
 /**
- * Limit spec for simple limit only. eg: new Limit (5)
+ * Limit spec for limit with offset. eg: new Limit(5)
  */
 class Limit implements QueryModifierInterface
 {
     /** @var  int */
     private $limit;
 
+    /** @var  int */
+    private $offset;
+
     /**
      * @param int $limit
+     * @param int $offset
      */
-    public function __construct($limit)
+    public function __construct($limit, $offset = 0)
     {
         $this->limit = $limit;
+        $this->offset = $offset;
     }
 
     /**
@@ -36,6 +41,7 @@ class Limit implements QueryModifierInterface
      */
     public function modifyQuery(Query $query)
     {
+        $query->setFirstResult($this->offset);
         $query->setMaxResults($this->limit);
     }
 }
