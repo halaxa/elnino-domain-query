@@ -14,10 +14,10 @@ use Doctrine\ORM\Query;
 interface ResultFetcherInterface
 {
     /**
-     * Returns configured callback which will be used to fetch results from database
+     * Returns end results from database
      *
      * @param Query $query
-     * @return callable
+     * @return mixed
      */
     public function fetchResult(Query $query);
 }
