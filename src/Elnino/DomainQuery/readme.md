@@ -126,8 +126,10 @@ je navíc nepovinný, takže specku v tomto příkladu můžeme klidně zavolat 
 $result = $userRepo->match(new ActiveUser);
 ```
 
-Metoda `match()` si v takovém případě alias vygeneruje z názvu třídy. Nejčastěji z `\App\Entity\User`
-udělá `user`, což v rámci jednoho dotazu postačuje. Nicméně je to interní implementace a nespoléháme na to.
+Metoda `match()` si v takovém případě alias vygeneruje z názvu třídy. Například z `\App\Entity\User`
+udělá `user_`, což v rámci jednoho dotazu postačuje.
+Ke každému automaticky vygenerovanému aliasu je přidán na konec symbol `_`, aby nedocházelo ke kolizi názvů
+s DQL operátory nebo funkcemi (třeba `order`), protože DQL neumožňuje escapování symbolů na úrovni jazyka.
 
 Nakonec, pokud přímo nevyžadujeme názvy vlastních parametrů v DQL dotazu, je možné jako návratovou hodnotu
 ve vlastní specifikaci použít specifikaci `Params`, která parametry generuje za nás a zápis dále zjednodušuje.
@@ -143,9 +145,47 @@ class ActiveUser implements SpecInterface
 }
 ```
 
+Proměnnou `$alias` nakonec nemusíme používat vůbec, protože se umí přidat sám. Stačí tedy:
+
+```php
+class ActiveUser implements SpecInterface
+{
+    function expression($alias = null)
+    {
+        return new Params(["active" => 1]);
+    }
+}
+```
+
+### Generování aliasů
+Abychom mohli řadit přímo v metodě `match`, třeba specifikací `OrderBy` jako třeba v jednoduchém
+příkladu takto:
+
+```php
+$repo->match('person', new PersonSpec, new OrderBy('person.age'))
+```
+
+musíme znát alias cílové entity. Pokud je tako entita ale najoinovaná někde v naší spece a alias má vygenerovaný,
+mohl by to být problém. Tím víc, když se k kednomu aliacu může dojít dvěma cestami:
+
+`SELECT person FROM Person person JOIN p.ratings rating`
+nebo
+`SELECT person FROM Person person JOIN person.comments comment JOIN comment.ratings rating`
+
+Pokud nechceme, nemusíme v `match` metodě ani v `Join` specifikaci žádné aliasy nikde specifikovat
+a vždy se vygenerují samy. Aliasy přijoinovaných entit se generují tak, aby reflektovaly cestu,
+kterou k nim bylo dospěno a byly tak jednoznačné. Pokud bychom tedy měli svoji specifikaci `WithWellRatedComments`,
+která v sobě bude joinovat tak jak máme ve druhém příkladu, vygenerovaný alias bude `person_comments_ratings_` 
+(z prvního příkladu by byl `person_comments_`).
+Ten pak snadno použijeme, pokud budeme podle `Rating` chtít řadit:
+
+```php
+$personRepo->match(new WithLastRatedComments, OrderBy('person_comments_ratings_.date DESC'))
+```
+
 ### Join specifikace
 Síla a znovupoužitelnost specifikací je patrná z toho, že je můžeme použít jak pro omezení výběru
-primární entity, tak pro omezení podle joinované entity aniž by o tom specifikace věděla. Řekněme, že
+primární entity, tak pro omezení podle joinované entity aniž by o tom joinovaná specifikace věděla. Řekněme, že
 entita User kvůli separaci modulů neví o článcích. Když budu chtít vybrat články aktivních uživatelů a půjdu na to
 tím pádem ze strany článku, mohu přesto specifikaci `ActiveUser` použít. Pomůže nám dvojice specifikací
 `Join` a `LeftJoin`. Api mají stejné, rozdíl je jen ten, který je patrný z názvu:
@@ -158,7 +198,7 @@ $articleRepo->match('article'
 );
 ```
 
-Prvním parametrem je join řetětec nebo `JoinExpr`. To kdybychom chtěli join specifikovat podrobněji. Druhým
+Prvním parametrem je join řetětec nebo `JoinExpr`, ve kterém stačí jen property. Druhým
 parametrem (nepovinným) je `SpecInterface`, který chceme přijoinovat. Tím se nám otevírá cesta ke stromovému joinování
 přes více entit, neboť `Join` samozřejmě implementuje `SpecInterface`:
 
@@ -170,7 +210,6 @@ $ratingRepo->match('rating'
         )
     )
 );
-```
 
 Kvůli zjevnosti celého procesu je zde použit způsob, kdy můžeme aliasy předávat explicitně a naše specifikace
 jej umí přijmout v konstruktoru. Každopádně joiny nám umožňují zjednodušení a do join řetězce aliasy nemusíme psát
@@ -188,6 +227,19 @@ $ratingRepo->match(
 );
 ```
 
+S případným OrderBy podle vygenerovaného aliasu:
+
+```php
+$ratingRepo->match(
+    new Join('article',
+        new Join('user'
+            new ActiveUser;
+        )
+    ),
+    new OrderBy('rating_article_user_.karma')
+);
+
+
 Vhodné je pak tento výraz zabalit do samostatné jedné specifikace, abychom si neznečisťovali uživatelský kód,
 mohli ji znovupoužít a třeba pomocí ní ovlivňovat i počet vrácených výsledků, způsob hydratace nebo fetch join.
 Prostě stejně jako bychom dříve pro tento use case vytvořili metodu na repository:
@@ -195,41 +247,28 @@ Prostě stejně jako bychom dříve pro tento use case vytvořili metodu na repo
 ```php
 class RatingsOfActiveUsers implements
     SpecInterface,
-    QueryBuilderModifierInterface,
     QueryModifierInterface
 {
-    private $limit;
-    private $select;
-
-    function __construct($limit)
-    {
-        $this->limit = $limit;
-    }
-
     public function expression($ratingAlias = null)
     {
-        $this->select = "$ratingAlias, a";
-        return new Join('article a', // alias zde specifukuji protoze ho chci mit v selectu
+        return new Join('article',
             new Join('user',
                 new ActiveUser
             )
         );
     }
 
-    // je volana az po expression()
-    public function modifyQueryBuilder(QueryBuilder $qb)
-    {
-        $qb->select($this->select);
-    }
-
-
     public function modifyQuery(Query $query)
     {
-        $query->setMaxResults($this->limit);
         $query->setHydrationMode(Query::HYDRATE_ARRAY);
     }
 }
 ```
+
+V metodě match se pak mohu rozhodnout o fetch joinu takto:
+
+```php
+$ratingRepo->match('rating_, rating_article_', new RatingsOfActiveUsers);
 
 ### Operátory
 Specifikace implementující `SpecInterface` můžeme z vnějšku kombinovat pomocí logických operátorů, které jsou také
@@ -281,22 +320,22 @@ specifikací jako argumentů více, je mezi ně implicitně položen operátor `
 
 Metoda `match()` na našich specifikacích rozpoznává následující rozhranní:
 
-1. `SpecInterface` To už známe, vyjadřuje výraz identifikující doménový stav/podmínku
-2. `QueryBuilderModifierInterface` Bude mu předán přímo QueryBuilder k modifikaci (opatrně!)
-3. `QueryModifierInterface` Bude mu předán Query k modifikaci
-4. `ResultFetcherInterface` Zajistí získání dat z Query
-5. `ResultModifierInterface` Dostane výsledek dotazu (např. kolekci entit) opět k dodatečné modifikaci.
-6. `EntityClassProviderInterface` Poskytuje FQCN entity, ke které se implementující specifikace váže.
+1. `EntityClassProviderInterface` Poskytuje FQCN entity, ke které se implementující specifikace váže.
+2. `SpecInterface` To už známe, vyjadřuje výraz identifikující doménový stav/podmínku
+3. `QueryBuilderModifierInterface` Bude mu předán přímo QueryBuilder k modifikaci (opatrně!)
+4. `QueryModifierInterface` Bude mu předán Query k modifikaci
+5. `ResultFetcherInterface` Zajistí získání dat z Query
+6. `ResultModifierInterface` Dostane výsledek dotazu (např. kolekci entit) opět k dodatečné modifikaci.
 
 jejich klíčové metody jsou v tomto pořadí také volány.
-
-#### ResultFetcherInterface
-Slouží k získání výsledku/dat z Query. Jeho metodě `fetchResult()` je předán Query a její návratová hodnota je brána
-za výsledek dotazu. Odkaz na tento výsledek je pak dodatečně předán případné implementaci `ResultModifierInterface`.
 
 #### EntityClassProviderInterface
 Pokud je implementováno, je třídě dána prioritra před tou, která je v Repository jako primární. Pokud Repository entity
 třídu nemá, je implementování tohoto interface nutné.
+
+#### ResultFetcherInterface
+Slouží k získání výsledku/dat z Query. Jeho metodě `fetchResult()` je předán Query a její návratová hodnota je brána
+za výsledek dotazu. Odkaz na tento výsledek je pak dodatečně předán případné implementaci `ResultModifierInterface`.
 
 #### Explicitní aliasy
 Explicitně předávané aliasy do `match()` metody lze kombinovat se specifikacemi, které nastaví SCALAR nebo ARRAY mód

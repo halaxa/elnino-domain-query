@@ -59,7 +59,7 @@ class Join implements SpecInterface
      */
     public function expression($alias = null)
     {
-        $joinAlias = $this->getJoinAlias();
+        $joinAlias = $this->getJoinAlias($alias);
 
         if ($this->expr instanceof SpecInterface) {
             $this->expr = DefaultSpecificationRepository::getExprFromSpec($this->expr, $joinAlias);
@@ -82,21 +82,12 @@ class Join implements SpecInterface
     }
 
     /**
+     * @param string $alias
      * @return string
      */
-    private function getJoinAlias()
+    private function getJoinAlias($alias)
     {
         return $this->join->getAlias()
-            ?: array_reverse(explode('.', $this->join->getJoin()))[0] . "_" .  self::$counter++;
-    }
-
-    /**
-     * Used only when query completing is finished. Don't use in your own specs
-     *
-     * @internal
-     */
-    static public function _queryFinished()
-    {
-        self::$counter = 0;
+            ?: $alias.array_reverse(explode('.', $this->join->getJoin()))[0].'_'; // eliminates reserved words collision
     }
 }

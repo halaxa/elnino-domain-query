@@ -500,7 +500,7 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
     {
         $loggerMock = function ($dql) {
             $this->assertSame(
-                'SELECT person0 FROM ElninoTest\DomainQuery\Entity\Person person0 WHERE person0.blocked = :blocked',
+                'SELECT person_ FROM ElninoTest\DomainQuery\Entity\Person person_ WHERE person_.blocked = :blocked',
                 $dql
             );
         };

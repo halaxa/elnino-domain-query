@@ -34,4 +34,4 @@ class RichUnblockedWithPendingTodos implements SpecInterface
             )
         ))->expression($alias);
     }
-} 
+}

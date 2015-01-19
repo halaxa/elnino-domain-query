@@ -137,7 +137,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
         } else {
             $mainAlias = strtolower(array_reverse(explode('\\', $entityClass))[0]);
-            $select = $mainAlias = $mainAlias . '0'; // eliminates reserved words collision
+            $select = $mainAlias = $mainAlias.'_'; // eliminates reserved words collision
         }
 
         $qb->select($select)
@@ -183,8 +183,6 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         } else {
             $result = $query->getResult();
         }
-
-        Join::_queryFinished();
 
         foreach ($resultModifiers as $resultModifier) {
             $resultModifier->modifyResult($result);

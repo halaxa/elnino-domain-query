@@ -42,9 +42,10 @@ class Params implements SpecInterface
         $i = 0;
         $exprs = $binds = [];
 
-        foreach ($this->params as $assoc => $value) {
-            list($alias, $field) = strpos($assoc, '.') ? explode('.', $assoc) : [$alias, $assoc];
+        foreach ($this->params as $key => $value) {
+            list($alias, $field) = strpos($key, '.') ? explode('.', $key) : [$alias, $key];
             $param = ":{$alias}_{$field}_" . $i++;
+
             $binds[$param] = $value;
             $exprs[] = $e->eq("$alias.$field" , $param);
         }
@@ -54,4 +55,4 @@ class Params implements SpecInterface
             $binds
         );
     }
-} 
+}

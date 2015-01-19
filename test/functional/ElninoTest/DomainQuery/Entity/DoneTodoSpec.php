@@ -28,4 +28,4 @@ class DoneTodoSpec implements SpecInterface
             [':done' => 1]
         );
     }
-} 
+}
