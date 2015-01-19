@@ -181,17 +181,17 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $this->assertCount(3, $this->repo->match('dummy.id, dummy.salary'));
     }
 
-    public  function testMatchWithAliasFieldsAndFether()
+    public  function testMatchWithAliasFieldsAndFetcher()
     {
-        $exp = [
+        $expected = [
             ['id' => 1, 'salary' => 20000],
             ['id' => 2, 'salary' => 25000],
             ['id' => 3, 'salary' => 30000],
         ];
 
-        $res = $this->repo->match('dummy.id, dummy.salary', new ArrayResultFetcher());
+        $result = $this->repo->match('dummy.id, dummy.salary', new ArrayResultFetcher());
 
-        $this->assertEquals($exp, $res);
+        $this->assertEquals($expected, $result);
     }
 
     public function testMatchWithMoreThanOneAliasesInSelectWithoutJoinFails()
