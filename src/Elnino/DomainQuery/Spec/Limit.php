@@ -13,7 +13,7 @@ use Elnino\DomainQuery\QueryModifierInterface;
 use Doctrine\ORM\Query;
 
 /**
- * Limit spec for limit with offset. eg: new Limit(5)
+ * Limit spec for limit with offset. eg: new Limit(5, 10)
  */
 class Limit implements QueryModifierInterface
 {
