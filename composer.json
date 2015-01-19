@@ -12,8 +12,7 @@
     },
     "require-dev": {
         "phpunit/dbunit": "1.2.*",
-        "elnino/mock": "dev-master",
-        "tracy/tracy": "dev-master"
+        "elnino/mock": "dev-master"
     },
     "license": "proprietary",
     "authors": [
