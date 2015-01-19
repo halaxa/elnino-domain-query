@@ -305,3 +305,17 @@ class HydrateArray implements ResultFetcherInterface{
 
 $result = $userRepo->match('user.id, user.name', new ActiveUser, new HydrateArray);
 ```
+
+### Vestavěné specifikace
+Nacházejí se v `Elnino\DomainQuery\Spec` a jsou standardními implementacemi výše uvedených rozhranní. Často se
+používají, případně ro bez nich ani pořádně nejde a proto si našly místo přímo v knihovně.
+
+#### `IndexBy`
+Nastaví `INDEX BY` DQL klauzuli. Použití:
+
+```php
+$result = $repo->match('order', new SomeOrderSpec, new IndexBy('order.id'));
+```
+
+Pokud nebude result array jinak modifikován, budou výsledky v něm indexovány pod klíčem, který odpovídá hodnotě
+v IndexBy. Je to standardní chování Doctrine 2. Viz http://doctrine-orm.readthedocs.org/en/latest/tutorials/working-with-indexed-associations.html
