@@ -39,7 +39,7 @@ class JoinTest extends \PHPUnit_Framework_TestCase
             new JoinExpr(JoinExpr::INNER_JOIN, 'test.text'),
             $this->exprMock
         );
-        $this->assertSame("text_0", $join->expression()->getJoins()[0]->getAlias());
+        $this->assertSame("test_text_",      $join->expression('test_')->getJoins()[0]->getAlias());
     }
 
     public function testExpressionWorksIfAliasInJoinExprAndParameterIsExpr()
