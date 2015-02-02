@@ -181,7 +181,7 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         if ($resultFetcher) {
             $result = $resultFetcher->fetchResult($query);
         } else {
-            $result = $query->getResult();
+            $result = $query->execute();
         }
 
         foreach ($resultModifiers as $resultModifier) {
