@@ -136,8 +136,8 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         if ($select) {
             $mainAlias = explode('.', trim(explode(',', $select)[0]))[0];
         } else {
-            $mainAlias = strtolower(array_reverse(explode('\\', $entityClass))[0]);
-            $select = $mainAlias = $mainAlias.'_'; // eliminates reserved words collision
+            $mainAlias = self::aliasForClass($entityClass);
+            $select = $mainAlias;
         }
 
         $qb->select($select)
@@ -189,6 +189,11 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
         }
 
         return $result;
+    }
+
+    public static function aliasForClass($className)
+    {
+        return strtolower(array_reverse(explode('\\', $className))[0]) . "_";
     }
 
     /**
