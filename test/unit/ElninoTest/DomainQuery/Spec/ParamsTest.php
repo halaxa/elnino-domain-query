@@ -17,7 +17,7 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
 {
     use MockingTrait;
 
-    public function testGeneratesParams()
+    public function testGeneratesParamsEq()
     {
         $values = [
             'a.field' => 'one',
@@ -41,7 +41,7 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
 
     }
 
-    public function testUsesGivenAliasWhenNonePresentInParams()
+    public function testUsesGivenAliasWhenNonePresentInParamsEq()
     {
         $values = [
             'field' => 'one',
@@ -57,6 +57,53 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
             [
                 ':test_field_0' => 'one',
                 ':b_field_1' => 'two',
+            ]
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression('test'));
+    }
+
+    public function testGeneratesParamsIn()
+    {
+        $values = [
+            'a.field' => ['one'],
+            'b.field' => ['two', 'three']
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->in('a.field', ':a_field_0'),
+                $e->in('b.field', ':b_field_1')
+            ),
+            [
+                ':a_field_0' => ['one'],
+                ':b_field_1' => ['two', 'three'],
+            ]
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression());
+
+    }
+
+    public function testUsesGivenAliasWhenNonePresentInParamsIn()
+    {
+        $values = [
+            'field' => ['one'],
+            'b.field' => ['two', 'three']
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->in('test.field', ':test_field_0'),
+                $e->in('b.field', ':b_field_1')
+            ),
+            [
+                ':test_field_0' => ['one'],
+                ':b_field_1' => ['two', 'three']
             ]
         );
 

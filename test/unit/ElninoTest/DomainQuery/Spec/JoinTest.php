@@ -56,4 +56,9 @@ class JoinTest extends \PHPUnit_Framework_TestCase
         $join = new Join('field');
         $this->assertInstanceOf(SpecExpr::class, $join->expression(null));
     }
+
+    public function testArbitraryJoinWithJoinExprWorks()
+    {
+        $this->markTestIncomplete("Implement me!");
+    }
 }
