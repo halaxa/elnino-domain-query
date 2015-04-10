@@ -538,4 +538,24 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
         $repo = new DefaultSpecificationRepository($this->getEm(), Order::class);
         $repo->match();
     }
+
+
+    public function testArbitraryJoinWithJoinExprWorks()
+    {
+        $repo = new DefaultSpecificationRepository($this->getEm(), Todo::class);
+
+        $alias = "todo_";
+
+        $joinExpr = new JoinExpr(
+            JoinExpr::INNER_JOIN,
+            Person::class,
+            "{$alias}person_",
+            JoinExpr::WITH,
+            "{$alias}person_ = {$alias}.person"
+        );
+
+        $result = $repo->match(new Join($joinExpr));
+
+        $this->assertNotCount(0, $result);
+    }
 }
