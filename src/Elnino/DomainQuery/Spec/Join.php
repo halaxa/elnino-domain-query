@@ -66,7 +66,13 @@ class Join implements SpecInterface
         }
 
         $j = $this->join;
-        $join = strpos($j->getJoin(), ".") ? $j->getJoin() : $alias . "." . $j->getJoin();
+        if (class_exists($j->getJoin())) { // Is it arbitrary join?
+            $join = $j->getJoin();
+        } elseif (strpos($j->getJoin(), ".")) { // Is alias provided?
+            $join = $j->getJoin();
+        } else {
+            $join = $alias . "." . $j->getJoin();
+        }
         $joinAlias = $joinAlias ?: $j->getAlias();
 
         return new SpecExpr(
