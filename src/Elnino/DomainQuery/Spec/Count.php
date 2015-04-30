@@ -39,6 +39,6 @@ class Count implements QueryBuilderModifierInterface, QueryModifierInterface
      */
     public function modifyQuery(Query $query)
     {
-        $query->setHydrationMode(Query::HYDRATE_SINGLE_SCALAR);
+//        $query->setHydrationMode(Query::HYDRATE_SINGLE_SCALAR);
     }
 }
