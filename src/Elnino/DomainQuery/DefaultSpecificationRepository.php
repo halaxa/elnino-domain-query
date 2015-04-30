@@ -150,10 +150,15 @@ class DefaultSpecificationRepository implements SpecificationRepositoryInterface
             }
         }
 
+        $joinAliases = [];
         foreach ($specExprs as $expr) {
             foreach ($expr->getJoins() as $join) {
+                if (isset($joinAliases[$join->getAlias()])) {
+                    continue;
+                }
                 $joinFunc = $join->isLeft() ? 'leftJoin' : 'join';
                 call_user_func_array([$qb, $joinFunc], array_slice($join->getParams(), 1));
+                $joinAliases[$join->getAlias()] = true;
             }
             foreach ($expr->getBinds() as $param => $value) {
                 $qb->setParameter($param, $value);

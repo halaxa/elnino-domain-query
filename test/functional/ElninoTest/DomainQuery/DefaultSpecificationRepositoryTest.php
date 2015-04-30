@@ -558,4 +558,9 @@ class DefaultSpecificationRepositoryTest extends \PHPUnit_Extensions_Database_Te
 
         $this->assertNotCount(0, $result);
     }
+
+    public function testSameJoinsAreUsedOnlyOnceInDql()
+    {
+        $result = $this->repo->match(new Join('todos'), new Join('todos'));
+    }
 }
