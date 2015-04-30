@@ -48,11 +48,13 @@ class Params implements SpecInterface
 
             $binds[$param] = $value;
             if (is_array($value)) {
-                $exprs[] = $e->in("$alias.$field", $param);
+                $op = 'in';
+            } elseif (strpos($value, '%') !== false) {
+                $op = 'like';
+            } else {
+                $op = 'eq';
             }
-            else {
-                $exprs[] = $e->eq("$alias.$field", $param);
-            }
+            $exprs[] = $e->{$op}("$alias.$field", $param);
         }
 
         return new SpecExpr(

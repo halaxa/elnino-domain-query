@@ -64,6 +64,53 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expected, $byParams->expression('test'));
     }
 
+    public function testGeneratesParamsLike()
+    {
+        $values = [
+            'a.field' => '%one',
+            'b.field' => 'two'
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->like('a.field', ':a_field_0'),
+                $e->eq('b.field', ':b_field_1')
+            ),
+            [
+                ':a_field_0' => '%one',
+                ':b_field_1' => 'two',
+            ]
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression());
+
+    }
+
+    public function testUsesGivenAliasWhenNonePresentInParamsLike()
+    {
+        $values = [
+            'field' => '%one',
+            'b.field' => 'two'
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->like('test.field', ':test_field_0'),
+                $e->eq('b.field', ':b_field_1')
+            ),
+            [
+                ':test_field_0' => '%one',
+                ':b_field_1' => 'two',
+            ]
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression('test'));
+    }
+
     public function testGeneratesParamsIn()
     {
         $values = [
