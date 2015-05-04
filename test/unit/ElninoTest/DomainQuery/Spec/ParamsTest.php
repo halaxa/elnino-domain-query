@@ -11,7 +11,6 @@ namespace ElninoTest\DomainQuery\Spec;
 use Elnino\DomainQuery\SpecExpr;
 use Elnino\DomainQuery\Spec\Params;
 use Elnino\MockingTrait;
-use ElninoTest\SimpleMockTrait;
 
 class ParamsTest extends \PHPUnit_Framework_TestCase
 {
@@ -86,6 +85,29 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
         $byParams = new Params($values);
         $this->assertEquals($expected, $byParams->expression());
 
+    }
+
+    public function testParamsAcceptsObject()
+    {
+        $values = [
+            'a.field' => new \stdClass(),
+            'b.field' => 'two'
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->eq('a.field', ':a_field_0'),
+                $e->eq('b.field', ':b_field_1')
+            ),
+            [
+                ':a_field_0' => new \stdClass(),
+                ':b_field_1' => 'two',
+            ]
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression());
     }
 
     public function testUsesGivenAliasWhenNonePresentInParamsLike()

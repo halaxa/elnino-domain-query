@@ -49,7 +49,7 @@ class Params implements SpecInterface
             $binds[$param] = $value;
             if (is_array($value)) {
                 $op = 'in';
-            } elseif (strpos($value, '%') !== false) {
+            } elseif (is_string($value) && strpos($value, '%') !== false) {
                 $op = 'like';
             } else {
                 $op = 'eq';
