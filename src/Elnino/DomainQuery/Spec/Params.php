@@ -51,8 +51,6 @@ class Params implements SpecInterface
                 $op = 'in';
             } elseif (is_string($value) && strpos($value, '%') !== false) {
                 $op = 'like';
-            } elseif ($value === null) {
-                $op = 'isNull';
             } else {
                 $op = 'eq';
             }
