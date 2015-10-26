@@ -51,6 +51,9 @@ class Params implements SpecInterface
                 $op = 'in';
             } elseif (is_string($value) && strpos($value, '%') !== false) {
                 $op = 'like';
+            } elseif ($value === null) {
+                $op = 'isNull';
+                unset($binds[$param]); // isNull has no value parameter
             } else {
                 $op = 'eq';
             }

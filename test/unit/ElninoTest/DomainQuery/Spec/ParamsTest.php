@@ -179,4 +179,21 @@ class ParamsTest extends \PHPUnit_Framework_TestCase
         $byParams = new Params($values);
         $this->assertEquals($expected, $byParams->expression('test'));
     }
+
+    public function testGeneratesIsNull()
+    {
+        $values = [
+            'a.field' => null,
+        ];
+
+        $e = new \Doctrine\ORM\Query\Expr();
+        $expected = new SpecExpr(
+            $e->andX(
+                $e->isNull('a.field')
+            )
+        );
+
+        $byParams = new Params($values);
+        $this->assertEquals($expected, $byParams->expression());
+    }
 }
