@@ -1,3 +1,5 @@
+# _Čistě open sourcovaná knihovna zatím bez dalších úprav._
+
 # Doménové dotazy nad Doctrine 2
 
 ## Myšlenka
