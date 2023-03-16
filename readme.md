@@ -1,4 +1,5 @@
-# _Čistě open sourcovaná knihovna zatím bez dalších úprav._
+## _Čistě open sourcovaná knihovna zatím bez dalších úprav._
+Díky firmě elnino za opensourcování 23.12.2021
 
 # Doménové dotazy nad Doctrine 2
 
